@@ -1,0 +1,3 @@
+include ':SmartCalendar'
+include ':app'
+rootProject.name = "SmartCaledarProject"
