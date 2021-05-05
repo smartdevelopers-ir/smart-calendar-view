@@ -29,7 +29,7 @@ public class SmartCalendarFragment extends Fragment {
     private SmartCalendarCellAdapter<? extends RecyclerView.ViewHolder> adapter;
     private SmartCalendarCellAdapterFactory mAdapterFactory;
     private List<? extends SmartCalendarEventModel> mCurrentMountEventModels;
-    private List<? extends SmartCalendarEventModel> mEventModels;
+    private static List<? extends SmartCalendarEventModel> mEventModels;
 
     private int mActiveYear, mActiveMount, mActiveDay;
 
@@ -50,7 +50,8 @@ public class SmartCalendarFragment extends Fragment {
         bundle.putInt("mPosition", position);
         bundle.putInt("mCalendarViewId", calendarViewId);
         bundle.putSerializable("mAdapterFactory", adapterFactory);
-        bundle.putSerializable("mEventModels", eventModels);
+//        bundle.putSerializable("mEventModels", eventModels);
+        mEventModels=eventModels;
         smartCalendarFragment.setArguments(bundle);
 
         smartCalendarFragment.isCreatedByGetInstance = true;
@@ -73,11 +74,10 @@ public class SmartCalendarFragment extends Fragment {
         }
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mEventModels = (List<? extends SmartCalendarEventModel>) bundle.getSerializable("mEventModels");
+//            mEventModels = (List<? extends SmartCalendarEventModel>) bundle.getSerializable("mEventModels");
             mAdapterFactory = (SmartCalendarCellAdapterFactory) bundle.getSerializable("mAdapterFactory");
             mCalendarViewId = bundle.getInt("mCalendarViewId");
             mPosition = bundle.getInt("mPosition");
-
 
         }
     }
@@ -105,11 +105,18 @@ public class SmartCalendarFragment extends Fragment {
     void calculateAddMount() {
 
         mOldPosition = mSmartCalendarView.getActivePosition();
-
+        if (mOldPosition == 0) {
+            mOldPosition = Integer.MAX_VALUE / 2;
+        }
         /*calculate add mount*/
         PersianCalendar persianCalendar = new PersianCalendar();
+        int initialMount = mSmartCalendarView.getInitialMount();
+        int initialYear = mSmartCalendarView.getInitialYear();
+        int initialDay = mSmartCalendarView.getInitialDay();
+        persianCalendar.setPersianDate(initialYear, initialMount, initialDay);
         int activeMount = 0;
         int activeYear = 0;
+
         activeMount = mSmartCalendarView.getActiveMount();
         activeYear = mSmartCalendarView.getActiveYear();
 
@@ -121,6 +128,7 @@ public class SmartCalendarFragment extends Fragment {
                 /*if slide to bigger position increase mount else decrease mount*/
                 mAddMount = SmartCalendarView.calculateDifferenceMount(activeYear, activeMount, persianCalendar.getPersianYear(), persianCalendar.getPersianMonth());
                 mAddMount += mountAddFactor;
+
             } else {
                 mAddMount = 0;
             }
@@ -153,7 +161,6 @@ public class SmartCalendarFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
     }
-
 
 
     public int getAddMount() {
@@ -228,7 +235,7 @@ public class SmartCalendarFragment extends Fragment {
         mSmartCalendarView.setActivePosition(mPosition);
         mSmartCalendarView.setActiveYear(mActiveYear);
         mSmartCalendarView.setActiveMount(mActiveMount);
-        mSmartCalendarView.setActiveDay(mActiveDay);
+//        mSmartCalendarView.setActiveDay(mActiveDay);
         mSmartCalendarView.setMountName(mActiveMountName);
         if (mSmartCalendarView.mOnDateChangeListener != null) {
             mSmartCalendarView.mOnDateChangeListener.onDateChanged(mActiveYear, mActiveMount, mActiveDay);
@@ -330,10 +337,15 @@ public class SmartCalendarFragment extends Fragment {
         int currentMount = persianCalendar.getPersianMonth();
         int currentYear = persianCalendar.getPersianYear();
         SmartCalendarFragment oldFragment = findFragmentByPosition(mOldPosition);
+        int initialYear = mSmartCalendarView.getInitialYear();
+        int initialMount = mSmartCalendarView.getInitialMount();
+        int initialDay = mSmartCalendarView.getInitialDay();
+        persianCalendar.setPersianDate(initialYear, initialMount, initialDay);
         persianCalendar.addPersianDate(PersianCalendar.MONTH, addMount);
         if (oldFragment != null && oldFragment.adapter != null) {
             SmartCalendarCellModel cellModel = oldFragment.adapter.getSelectedDate();
             if (cellModel != null) {
+//                mLastSelectedPos=oldFragment.adapter.getSelectedPosition();
                 int selectedDay = cellModel.getPersianDay();
                 if (mAddWeek != 0) {
                     persianCalendar.setPersianDate(persianCalendar.getPersianYear(), persianCalendar.getPersianMonth(),
@@ -389,28 +401,57 @@ public class SmartCalendarFragment extends Fragment {
                     temp.getPersianMonth() == currentMount &&
                     temp.getPersianYear() == currentYear) {
                 model.setCurrentDay(true);
-                if (temp.getPersianMonth() == selectedMount && mAddWeek == 0 && mLastSelectedPos == -1) {
+                if (temp.getPersianMonth() == selectedMount && mAddWeek == 0
+                        && mLastSelectedPos == -1 && model.getPersianDay() == selectedDay) {
                     model.setSelected(true);
                 }
             }
             if (mSmartCalendarView.isExpanded()) {
                 /*if it is not current mount*/
-                if (mAddMount != 0 && mLastSelectedPos == -1) {
-                    if (selectedMount == temp.getPersianMonth() && temp.getPersianDay() == 1) {
+//                if (mAddMount != 0 && mLastSelectedPos == -1 && initialDay==0) {
+
+
+                if (isInitialDateSet() && mLastSelectedPos == -1
+                        && temp.getPersianMonth() == initialMount
+                        && temp.getPersianYear() == initialYear
+                ) {/*if initial date is set*/
+                    if (temp.getPersianDay() == initialDay
+                            && !model.isInactivate()) {
                         model.setSelected(true);
                     }
-                } else if (mLastSelectedPos != -1 && i == mLastSelectedPos) {
-                    model.setSelected(true);
+                } else {/*if initial date is NOT set*/
+                    if (mAddMount != 0 && mLastSelectedPos == -1) {
+                        if (selectedMount == temp.getPersianMonth() &&
+                                temp.getPersianDay() == 1) {
+                            model.setSelected(true);
+                        }
+                    } else if (mLastSelectedPos != -1 && i == mLastSelectedPos) {
+                        model.setSelected(true);
+                    }
                 }
+
             } else {
                 /*if it is no current week*/
-                if (mAddWeek != 0 && !model.isInactivate() && mLastSelectedPos == -1) {
-                    if (model.getPersianDay() == selectedDay && model.getCurrentMount() == selectedMount
-                            && model.getCurrentYear() == selectedYear) {
+                if (isInitialDateSet() && mLastSelectedPos == -1
+                        && temp.getPersianMonth() == initialMount
+                        && temp.getPersianYear() == initialYear
+                        && mAddWeek == 0
+                ) {/*if initial date is set*/
+                    if (temp.getPersianDay() == initialDay
+                            && !model.isInactivate()) {
                         model.setSelected(true);
                     }
-                } else if (mLastSelectedPos != -1 && i == mLastSelectedPos) {
-                    model.setSelected(true);
+                } else {/*if initial date is NOT set*/
+
+                    if (mAddWeek != 0 && !model.isInactivate() &&
+                            mLastSelectedPos == -1) {
+                        if (model.getPersianDay() == selectedDay && model.getCurrentMount() == selectedMount
+                                && model.getCurrentYear() == selectedYear) {
+                            model.setSelected(true);
+                        }
+                    } else if (mLastSelectedPos != -1 && i == mLastSelectedPos) {
+                        model.setSelected(true);
+                    }
                 }
             }
 
@@ -439,6 +480,10 @@ public class SmartCalendarFragment extends Fragment {
         mActiveYear = cellModels.get(cellModels.size() / 2).getCurrentYear();
 
         return cellModels;
+    }
+
+    private boolean isInitialDateSet() {
+        return mSmartCalendarView.getInitialDay() != 0;
     }
 
     private int getMaximumDAyOfMount(int year, int mount) {

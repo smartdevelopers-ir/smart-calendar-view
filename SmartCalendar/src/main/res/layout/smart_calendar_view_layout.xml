@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layoutDirection="rtl"
-    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
-    <TextView
+    tools:parentTag="android.widget.RelativeLayout">
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/smart_calendar_view_txtDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,14 +14,8 @@
         android:layout_alignParentStart="true"
 
         android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
         style="?attr/mountTextStyle"
 
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/smart_calendar_week_name_holder"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1"
         />
 
     <LinearLayout
@@ -33,8 +27,6 @@
         android:layoutDirection="rtl"
         android:layout_below="@id/smart_calendar_view_txtDate"
         style="?attr/dayOfWeekGroupStyle"
-
-        app:layout_constraintTop_toBottomOf="@id/smart_calendar_view_txtDate"
         >
         <TextView
             android:id="@+id/smart_calendar_week_name_txtSaturday"
@@ -109,14 +101,12 @@
         android:overScrollMode="never"
         android:layout_below="@id/smart_calendar_week_name_holder"
         style="?attr/sliderStyle"
-        app:layout_constraintTop_toBottomOf="@id/smart_calendar_week_name_holder"
         />
     <FrameLayout
         android:id="@+id/smart_calendar_view_arrowPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/smart_calendar_view_viewPager"
-        app:layout_constraintTop_toBottomOf="@id/smart_calendar_view_viewPager"
         >
         <ImageView
             android:id="@+id/smart_calendar_view_imgArrow"

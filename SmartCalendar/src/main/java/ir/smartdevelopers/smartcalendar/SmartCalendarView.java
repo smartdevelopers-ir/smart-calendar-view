@@ -28,6 +28,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.Size;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -73,7 +74,9 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
     /** ViewGroup of days of week*/
     private LinearLayout mDaysOfWeekViewGroup;
 
-
+    private int mInitialDay=0;
+    private int mInitialMount=0;
+    private int mInitialYear=0;
     public SmartCalendarView(@NonNull Context context) {
         super(context);
         init(context, null);
@@ -149,7 +152,11 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
 
     @SuppressLint("ClickableViewAccessibility")
     void updateAdapter() {
-
+        if (mInitialDay==0){
+            PersianCalendar persianCalendar=new PersianCalendar();
+            setInitialDate(persianCalendar.getPersianYear(),persianCalendar.getPersianMonth(),
+                    persianCalendar.getPersianDay());
+        }
         mSmartCalendarViewAdapter.setEvents(mEventModels);
         if (mIsExpandable) {
             ((RecyclerView) mViewPager2.getChildAt(0)).addOnItemTouchListener(this);
@@ -197,6 +204,12 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
             }
         });
 
+    }
+
+    public void setInitialDate(int year,int mount,int day){
+        mInitialYear=year;
+        mInitialMount=mount;
+        mInitialDay=day;
     }
     private int getRealTop(View view){
         int[] location=new int[2];
@@ -274,6 +287,20 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
         return mAdapterFactory;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+     int getInitialDay() {
+        return mInitialDay;
+    }
+
+    public int getInitialMount() {
+        return mInitialMount;
+    }
+
+    public int getInitialYear() {
+        return mInitialYear;
+    }
+
+
     private  static class SavedState extends BaseSavedState {
         SparseArray<String> tags;
         String mountName;
@@ -283,7 +310,7 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
         boolean isExpandable;
         public SavedState(Parcel source) {
             super(source);
-            tags=source.readSparseArray(tags.getClass().getClassLoader());
+            tags=source.readSparseArray(getClass().getClassLoader());
             mountName=source.readString();
             selectedPos=source.readInt();
             selectedPagePos=source.readInt();
@@ -412,7 +439,7 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
 
 
     public int getActiveDay() {
-        return mActiveDay;
+        return mSmartCalendarViewAdapter.getActiveDay(mViewPager2.getCurrentItem());
     }
 
      void setActiveDay(int activeDay) {
