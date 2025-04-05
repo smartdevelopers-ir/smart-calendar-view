@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.Size;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
@@ -52,6 +53,7 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
     private SmartCalendarCellAdapterFactory mAdapterFactory;
     private MotionHelper mMotionHelper;
     private TextView txtMountName;
+    private TextView txtToday;
     private boolean mIsExpanded =true;
     SparseArray<String> mTags=new SparseArray<>();
     int mActivePosition =0;
@@ -77,30 +79,26 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
     private int mInitialDay=0;
     private int mInitialMount=0;
     private int mInitialYear=0;
+    private static final int DEF_STYLE_ATTR = R.attr.smartCalendarStyle;
+    private static final int DEF_STYLE_RES = R.style.SmartCalendarDefaultStyle;
     public SmartCalendarView(@NonNull Context context) {
-        super(context);
-        init(context, null);
-
-
+        this(context,null);
     }
 
     public SmartCalendarView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+        this(context, attrs,DEF_STYLE_ATTR);
+
     }
 
     public SmartCalendarView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
+        init(context, attrs,defStyleAttr);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public SmartCalendarView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(context, attrs);
-    }
 
-    private void init(@NonNull Context context, @Nullable AttributeSet attrs) {
+
+
+    private void init(@NonNull Context context, @Nullable AttributeSet attrs,int defStyleAttr) {
         setSaveEnabled(true);
         setLayoutDirection(LAYOUT_DIRECTION_RTL);
         View view = LayoutInflater.from(getContext()).inflate(R.layout.smart_calendar_view_layout, this, true);
@@ -111,7 +109,8 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
         mDaysOfWeekViewGroup=view.findViewById(R.id.smart_calendar_week_name_holder);
 
         if (attrs!=null){
-            TypedArray typedArray=context.obtainStyledAttributes(attrs,R.styleable.SmartCalendarView);
+            TypedArray typedArray=context.obtainStyledAttributes(attrs,R.styleable.SmartCalendarView,
+                    defStyleAttr,DEF_STYLE_RES);
             mIsExpanded=typedArray.getBoolean(R.styleable.SmartCalendarView_scv_expanded,true);
             mIsExpandable =typedArray.getBoolean(R.styleable.SmartCalendarView_scv_expandable,false);
             mArrowTintColor=typedArray.getColor(R.styleable.SmartCalendarView_scv_arrowTint,mArrowTintColor);
@@ -760,6 +759,23 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
 
 
         }
+    }
+    public void showTodayText(boolean animate){
+        txtToday.animate().setDuration(animate ? 150 : 0)
+                .alpha(1)
+                .withStartAction(()->{
+                    txtToday.setAlpha(0);
+                    txtToday.setVisibility(View.VISIBLE);
+                })
+                .start();
+    }
+    public void hideTodayText(boolean animate){
+        txtToday.animate().setDuration(animate ? 150 : 0)
+                .alpha(0)
+                .withEndAction(()->{
+                    txtToday.setVisibility(View.INVISIBLE);
+                })
+                .start();
     }
 
     static int calculateDifferenceMount(int newYear, int newMount, int oldYear, int oldMount){

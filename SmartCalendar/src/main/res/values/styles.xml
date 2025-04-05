@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SmartCalendarDefaultStyle">
+        <item name="smartCalendarStyle">@style/SmartCalendarDefaultTheme</item>
+    </style>
+    <style name="SmartCalendarDefaultTheme">
+        <item name="mountTextStyle">@style/SmartCalendarDefaultStyle.MountTextStyle</item>
+        <item name="todayTextStyle">@style/SmartCalendarDefaultStyle.TodayTextStyle</item>
+        <item name="scv_expandable">true</item>
+        <item name="scv_showArrowPanel">true</item>
+    </style>
+    <style name="SmartCalendarDefaultStyle.MountTextStyle">
+        <item name="android:layout_marginStart">8dp</item>
+    </style>
+    <style name="SmartCalendarDefaultStyle.TodayTextStyle">
+        <item name="android:layout_marginEnd">8dp</item>
+    </style>
+</resources>

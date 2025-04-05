@@ -3,12 +3,15 @@
 
     <declare-styleable name="SmartCalendarViewStyle">
         <attr name="mountTextStyle" format="reference"/>
+        <attr name="todayTextStyle" format="reference"/>
         <attr name="dayOfWeekTextStyle" format="reference"/>
         <attr name="mountBackgroundStyle" format="reference"/>
-        <attr name="SmartCalendarStyle" format="reference"/>
         <attr name="dayOfWeekGroupStyle" format="reference"/>
         <attr name="sliderStyle" format="reference"/>
 
+    </declare-styleable>
+    <declare-styleable name="SmartCalendarDefaultTheme">
+        <attr name="smartCalendarStyle" format="reference"/>
     </declare-styleable>
     <declare-styleable name="SmartCalendarView">
         <attr name="scv_expandable" format="boolean"/>

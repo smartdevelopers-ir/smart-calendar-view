@@ -12,12 +12,19 @@
         android:layout_height="wrap_content"
         tools:text="خرداد 1399"
         android:layout_alignParentStart="true"
-
         android:layout_marginTop="8dp"
         style="?attr/mountTextStyle"
 
         />
-
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/smart_calendar_view_txtToday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/today"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="8dp"
+        style="?attr/todayTextStyle"
+        />
     <LinearLayout
         android:id="@+id/smart_calendar_week_name_holder"
         android:layout_width="match_parent"

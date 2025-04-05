@@ -18,6 +18,9 @@
  */
 package ir.smartdevelopers.smartcalendar.persiandatepicker.util;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 /**
  * algorithms for converting Julian days to the Persian calendar, and vice versa
  * are adopted from <a
@@ -65,7 +68,68 @@ public class PersianCalendarUtils
     {
         return PersianCalendarUtils.ceil((38D + (PersianCalendarUtils.ceil(persianYear - 474L, 2820L) + 474L)) * 682D, 2816D) < 682L;
     }
+    public static long persianToMillis(int persianYear, int persianMonth, int persianDay) {
+        // تبدیل شمسی به میلادی
+        int[] gregorianDate = persianToGregorian(persianYear, persianMonth, persianDay);
+        int gregorianYear = gregorianDate[0];
+        int gregorianMonth = gregorianDate[1]; // ماه از 1 تا 12
+        int gregorianDay = gregorianDate[2];
 
+        // تنظیم تاریخ میلادی در Calendar و گرفتن میلی‌ثانیه
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Tehran"));
+        calendar.set(gregorianYear, gregorianMonth , gregorianDay, 0, 0, 0); // ماه از 0 تا 11
+        calendar.set(Calendar.MILLISECOND, 0); // صفر کردن میلی‌ثانیه
+        return calendar.getTimeInMillis();
+    }
+
+    public static int[] persianToGregorian(int persianYear, int persianMonth, int persianDay) {
+        // محاسبات تبدیل شمسی به میلادی
+        int jy = persianYear - 979;
+        int jm = persianMonth ;
+        int jd = persianDay - 1;
+
+        int jDayNo = 365 * jy + (jy / 33) * 8 + (jy % 33 + 3) / 4;
+        for (int i = 0; i < jm; ++i) {
+            jDayNo += new int[]{31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30}[i];
+        }
+        jDayNo += jd;
+
+        int gDayNo = jDayNo + 79;
+        int gy = 1600 + 400 * (gDayNo / 146097);
+        gDayNo = gDayNo % 146097;
+
+        int leap = 1;
+        if (gDayNo >= 36525) {
+            gDayNo--;
+            gy += 100 * (gDayNo / 36524);
+            gDayNo = gDayNo % 36524;
+            if (gDayNo >= 365) {
+                gDayNo++;
+            } else {
+                leap = 0;
+            }
+        }
+
+        gy += 4 * (gDayNo / 1461);
+        gDayNo %= 1461;
+
+        if (gDayNo >= 366) {
+            leap = 0;
+            gDayNo--;
+            gy += gDayNo / 365;
+            gDayNo = gDayNo % 365;
+        }
+
+        int gm, gd;
+        int i;
+        for (i = 0; gDayNo >= new int[]{31, 28 + leap, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}[i]; ++i) {
+            gDayNo -= new int[]{31, 28 + leap, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}[i];
+        }
+        gm = i ;
+        gd = gDayNo + 1;
+
+        return new int[]{gy, gm, gd}; // سال، ماه، روز میلادی
+    }
     /**
      * Converts a provided Julian Day Number (i.e. the number of days since
      * January 1 in the year 4713 BC) to the Persian (Shamsi) date. Since the
@@ -84,10 +148,64 @@ public class PersianCalendarUtils
         long year = 474L + 2820L * ((long) Math.floor(persianEpochInJulian / 1029983D)) + ycycle;
         long aux = (1L + julianDate) - persianToJulian(year, 0, 1);
         int month = (int) (aux > 186L ? Math.ceil((double) (aux - 6L) / 30D) - 1 : Math.ceil((double) aux / 31D) - 1);
-        int day = (int) (julianDate - (persianToJulian(year, month, 1) - 1L));
+        int day = (int) (julianDate - (persianToJulian(year, month, 1) )) + 1;
         return (year << 16) | (month << 8) | day;
     }
+    public static int[] millisToJalali(long timeInMillis) {
+        // تبدیل میلی‌ثانیه به تاریخ میلادی
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeInMillis);
+        int gYear = calendar.get(Calendar.YEAR);
+        int gMonth = calendar.get(Calendar.MONTH) ; // ماه از 0 شروع می‌شه
+        int gDay = calendar.get(Calendar.DAY_OF_MONTH);
 
+        // تبدیل تاریخ میلادی به شمسی
+        return gregorianToJalali(gYear, gMonth, gDay);
+    }
+    /**
+     * @param gMonth starts from 0
+     * */
+    public static int[] gregorianToJalali(int gYear, int gMonth, int gDay) {
+        int[] jalaliDate = new int[3];
+        int gy = gYear - 1600;
+        int gm = gMonth ;
+        int gd = gDay - 1;
+
+        int gDayNo = 365 * gy + (gy + 3) / 4 - (gy + 99) / 100 + (gy + 399) / 400;
+        for (int i = 0; i < gm; ++i) {
+            int[] daysInMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            gDayNo += daysInMonth[i];
+        }
+        if (gm > 1 && ((gy % 4 == 0 && gy % 100 != 0) || (gy % 400 == 0))) {
+            gDayNo += 1; // سال کبیسه
+        }
+        gDayNo += gd;
+
+        int jDayNo = gDayNo - 79;
+        int jNp = jDayNo / 12053;
+        jDayNo %= 12053;
+
+        int jy = 979 + 33 * jNp + 4 * (jDayNo / 1461);
+        jDayNo %= 1461;
+
+        if (jDayNo >= 366) {
+            jy += (jDayNo - 1) / 365;
+            jDayNo = (jDayNo - 1) % 365;
+        }
+
+        int jm, jd;
+        int i;
+        for (i = 0; i < 11 && jDayNo >= new int[]{31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30}[i]; ++i) {
+            jDayNo -= new int[]{31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30}[i];
+        }
+        jm = i ;
+        jd = jDayNo + 1;
+
+        jalaliDate[0] = jy; // سال شمسی
+        jalaliDate[1] = jm; // ماه شمسی
+        jalaliDate[2] = jd; // روز شمسی
+        return jalaliDate;
+    }
     /**
      * Ceil function in original algorithm
      *

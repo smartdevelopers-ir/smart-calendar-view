@@ -157,18 +157,27 @@ public class PersianCalendar extends GregorianCalendar {
 	 * Calculate persian date from current Date and populates the corresponding
 	 * fields(persianYear, persianMonth, persianDay)
 	 */
+//	protected void calculatePersianDate() {
+//		long julianDate = ((long) Math.floor((getTimeInMillis() - PersianCalendarConstants.MILLIS_JULIAN_EPOCH)) / PersianCalendarConstants.MILLIS_OF_A_DAY);
+//		long PersianRowDate = PersianCalendarUtils.julianToPersian(julianDate);
+//		long year = PersianRowDate >> 16;
+//		int month = (int) (PersianRowDate & 0xff00) >> 8;
+//		int day = (int) (PersianRowDate & 0xff);
+//		this.persianYear = (int) (year > 0 ? year : year - 1);
+//		this.persianMonth = month;
+//		this.persianDay = day;
+//
+//	}
 	protected void calculatePersianDate() {
-		long julianDate = ((long) Math.floor((getTimeInMillis() - PersianCalendarConstants.MILLIS_JULIAN_EPOCH)) / PersianCalendarConstants.MILLIS_OF_A_DAY);
-		long PersianRowDate = PersianCalendarUtils.julianToPersian(julianDate);
-		long year = PersianRowDate >> 16;
-		int month = (int) (PersianRowDate & 0xff00) >> 8;
-		int day = (int) (PersianRowDate & 0xff);
+		int[] persianDate = PersianCalendarUtils.millisToJalali(getTimeInMillis());
+		long year = persianDate[0];
+		int month = persianDate[1];
+		int day = persianDate[2];
 		this.persianYear = (int) (year > 0 ? year : year - 1);
 		this.persianMonth = month;
 		this.persianDay = day;
 
 	}
-
 	/**
 	 * 
 	 * Determines if the given year is a leap year in persian calendar. Returns
@@ -189,11 +198,17 @@ public class PersianCalendar extends GregorianCalendar {
 	 * @param persianMonth
 	 * @param persianDay
 	 */
+//	public void setPersianDate(int persianYear, int persianMonth, int persianDay) {
+//		this.persianYear = persianYear;
+//		this.persianMonth = persianMonth;
+//		this.persianDay = persianDay;
+//		setTimeInMillis(convertToMilis(PersianCalendarUtils.persianToJulian(this.persianYear > 0 ? this.persianYear : this.persianYear + 1, this.persianMonth - 1, this.persianDay)));
+//	}
 	public void setPersianDate(int persianYear, int persianMonth, int persianDay) {
 		this.persianYear = persianYear;
-		this.persianMonth = persianMonth;
+		this.persianMonth = persianMonth - 1;
 		this.persianDay = persianDay;
-		setTimeInMillis(convertToMilis(PersianCalendarUtils.persianToJulian(this.persianYear > 0 ? this.persianYear : this.persianYear + 1, this.persianMonth - 1, this.persianDay)));
+		setTimeInMillis(PersianCalendarUtils.persianToMillis(this.persianYear > 0 ? this.persianYear : this.persianYear + 1, this.persianMonth , this.persianDay));
 	}
 
 	public int getPersianYear() {
@@ -306,17 +321,17 @@ public class PersianCalendar extends GregorianCalendar {
 			return; // Do nothing!
 		}
 
-		if (field < 0 || field >= ZONE_OFFSET) {
-			throw new IllegalArgumentException();
-		}
-
-		if (field == YEAR) {
-			setPersianDate(this.persianYear + amount, getPersianMonth(), this.persianDay);
-			return;
-		} else if (field == MONTH) {
-			setPersianDate(this.persianYear + ((getPersianMonth() + amount) / 12), (getPersianMonth() + amount) % 12, this.persianDay);
-			return;
-		}
+//		if (field < 0 || field >= ZONE_OFFSET) {
+//			throw new IllegalArgumentException();
+//		}
+//
+//		if (field == YEAR) {
+//			setPersianDate(this.persianYear + amount, getPersianMonth(), this.persianDay);
+//			return;
+//		} else if (field == MONTH) {
+//			setPersianDate(this.persianYear + ((getPersianMonth() + amount) / 12), (getPersianMonth() + amount) % 12, this.persianDay);
+//			return;
+//		}
 		add(field, amount);
 		calculatePersianDate();
 	}
