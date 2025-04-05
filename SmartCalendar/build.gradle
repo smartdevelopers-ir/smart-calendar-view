@@ -41,7 +41,7 @@ android {
     }
 }
 group = 'ir.smartdevelopers'
-version = '1.0.9'
+version = '1.0.10'
 
 //task sourcesJar(type: Jar) {
 //    archiveClassifier.set("sources")

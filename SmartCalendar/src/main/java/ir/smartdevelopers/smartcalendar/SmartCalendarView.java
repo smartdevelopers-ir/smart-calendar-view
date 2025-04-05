@@ -53,7 +53,7 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
     private SmartCalendarCellAdapterFactory mAdapterFactory;
     private MotionHelper mMotionHelper;
     private TextView txtMountName;
-    private TextView txtToday;
+//    private TextView txtToday;
     private boolean mIsExpanded =true;
     SparseArray<String> mTags=new SparseArray<>();
     int mActivePosition =0;
@@ -760,23 +760,23 @@ public class SmartCalendarView extends RelativeLayout implements RecyclerView.On
 
         }
     }
-    public void showTodayText(boolean animate){
-        txtToday.animate().setDuration(animate ? 150 : 0)
-                .alpha(1)
-                .withStartAction(()->{
-                    txtToday.setAlpha(0);
-                    txtToday.setVisibility(View.VISIBLE);
-                })
-                .start();
-    }
-    public void hideTodayText(boolean animate){
-        txtToday.animate().setDuration(animate ? 150 : 0)
-                .alpha(0)
-                .withEndAction(()->{
-                    txtToday.setVisibility(View.INVISIBLE);
-                })
-                .start();
-    }
+//    public void showTodayText(boolean animate){
+//        txtToday.animate().setDuration(animate ? 150 : 0)
+//                .alpha(1)
+//                .withStartAction(()->{
+//                    txtToday.setAlpha(0);
+//                    txtToday.setVisibility(View.VISIBLE);
+//                })
+//                .start();
+//    }
+//    public void hideTodayText(boolean animate){
+//        txtToday.animate().setDuration(animate ? 150 : 0)
+//                .alpha(0)
+//                .withEndAction(()->{
+//                    txtToday.setVisibility(View.INVISIBLE);
+//                })
+//                .start();
+//    }
 
     static int calculateDifferenceMount(int newYear, int newMount, int oldYear, int oldMount){
 
