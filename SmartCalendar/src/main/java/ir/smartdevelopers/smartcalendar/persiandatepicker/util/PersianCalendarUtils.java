@@ -66,7 +66,15 @@ public class PersianCalendarUtils
      */
     public static boolean isPersianLeapYear(int persianYear)
     {
-        return PersianCalendarUtils.ceil((38D + (PersianCalendarUtils.ceil(persianYear - 474L, 2820L) + 474L)) * 682D, 2816D) < 682L;
+
+        int mod = persianYear % 33;
+        for( int r : PersianCalendarConstants.LEAP_RATES){
+            if(r == mod){
+                return true;
+            }
+        }
+        return  false;
+//        return PersianCalendarUtils.ceil((38D + (PersianCalendarUtils.ceil(persianYear - 474L, 2820L) + 474L)) * 682D, 2816D) < 682L;
     }
     public static long persianToMillis(int persianYear, int persianMonth, int persianDay) {
         // تبدیل شمسی به میلادی

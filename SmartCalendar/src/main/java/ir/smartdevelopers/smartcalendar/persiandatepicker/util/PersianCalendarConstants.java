@@ -32,7 +32,7 @@ public class PersianCalendarConstants {
 	// Milliseconds of a day calculated by 24L(hours) * 60L(minutes) *
 	// 60L(seconds) * 1000L(mili);
 	public static final long MILLIS_OF_A_DAY = 86400000L;
-
+	public  static int[] LEAP_RATES = {1, 5, 9, 13, 17, 22, 26, 30};
 	/**
 	 * The JDN of 1 Farvardin 1; Equivalent to March 19, 622 A.D.
 	 */
