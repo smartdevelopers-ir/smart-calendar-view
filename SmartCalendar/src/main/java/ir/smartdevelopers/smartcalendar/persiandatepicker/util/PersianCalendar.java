@@ -18,8 +18,10 @@
  */
 package ir.smartdevelopers.smartcalendar.persiandatepicker.util;
 
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import android.icu.util.Calendar;
+import android.icu.util.GregorianCalendar;
+import android.icu.util.TimeZone;
+import android.icu.util.ULocale;
 
 /**
  * 
@@ -111,21 +113,21 @@ import java.util.TimeZone;
  * @author Morteza  contact: <a href="mailto:Mortezaadi@gmail.com">Mortezaadi@gmail.com</a>
  * @version 1.1
  */
-public class PersianCalendar extends GregorianCalendar {
-
+public class PersianCalendar  {
+	public static final ULocale PERSIAN_LOCALE = new ULocale("fa_IR@calendar=persian");
 	private static final long serialVersionUID = 5541422440580682494L;
-
-	private int persianYear;
-	private int persianMonth;
-	private int persianDay;
+	private final Calendar mCalendar;
+//	private int persianYear;
+//	private int persianMonth;
+//	private int persianDay;
 	// use to seperate PersianDate's field and also Parse the DateString based
 	// on this delimiter
 	private String delimiter = "/";
 
-	private long convertToMilis(long julianDate) {
-		return PersianCalendarConstants.MILLIS_JULIAN_EPOCH + julianDate * PersianCalendarConstants.MILLIS_OF_A_DAY
-				+ PersianCalendarUtils.ceil(getTimeInMillis() - PersianCalendarConstants.MILLIS_JULIAN_EPOCH, PersianCalendarConstants.MILLIS_OF_A_DAY);
-	}
+//	private long convertToMilis(long julianDate) {
+//		return PersianCalendarConstants.MILLIS_JULIAN_EPOCH + julianDate * PersianCalendarConstants.MILLIS_OF_A_DAY
+//				+ PersianCalendarUtils.ceil(getTimeInMillis() - PersianCalendarConstants.MILLIS_JULIAN_EPOCH, PersianCalendarConstants.MILLIS_OF_A_DAY);
+//	}
 
 	/**
 	 * default constructor
@@ -136,8 +138,10 @@ public class PersianCalendar extends GregorianCalendar {
 	 * the library; however you can change the TimeZone as you do in
 	 * GregorianCalendar by calling setTimeZone()
 	 */
+
 	public PersianCalendar(long millis) {
-		setTimeInMillis(millis);
+		mCalendar = Calendar.getInstance(PERSIAN_LOCALE);
+		mCalendar.setTimeInMillis(millis);
 	}
 
 	/**
@@ -150,7 +154,8 @@ public class PersianCalendar extends GregorianCalendar {
 	 * GregorianCalendar by calling setTimeZone()
 	 */
 	public PersianCalendar() {
-		setTimeZone(TimeZones.ASIA_TEHRAN.getTimeZone());
+		mCalendar = Calendar.getInstance(PERSIAN_LOCALE);
+
 	}
 
 	/**
@@ -168,16 +173,16 @@ public class PersianCalendar extends GregorianCalendar {
 //		this.persianDay = day;
 //
 //	}
-	protected void calculatePersianDate() {
-		int[] persianDate = PersianCalendarUtils.millisToJalali(getTimeInMillis());
-		long year = persianDate[0];
-		int month = persianDate[1];
-		int day = persianDate[2];
-		this.persianYear = (int) (year > 0 ? year : year - 1);
-		this.persianMonth = month;
-		this.persianDay = day;
-
-	}
+//	protected void calculatePersianDate() {
+//		int[] persianDate = PersianCalendarUtils.millisToJalali(getTimeInMillis());
+//		long year = persianDate[0];
+//		int month = persianDate[1];
+//		int day = persianDate[2];
+//		this.persianYear = (int) (year > 0 ? year : year - 1);
+//		this.persianMonth = month;
+//		this.persianDay = day;
+//
+//	}
 	/**
 	 * 
 	 * Determines if the given year is a leap year in persian calendar. Returns
@@ -187,7 +192,8 @@ public class PersianCalendar extends GregorianCalendar {
 	 */
 	public boolean isPersianLeapYear() {
 		// calculatePersianDate();
-		return PersianCalendarUtils.isPersianLeapYear(this.persianYear);
+//		return isLeapYear(get(Calendar.YEAR));
+		return PersianCalendarUtils.isPersianLeapYear(getPersianYear());
 	}
 
 	/**
@@ -205,15 +211,16 @@ public class PersianCalendar extends GregorianCalendar {
 //		setTimeInMillis(convertToMilis(PersianCalendarUtils.persianToJulian(this.persianYear > 0 ? this.persianYear : this.persianYear + 1, this.persianMonth - 1, this.persianDay)));
 //	}
 	public void setPersianDate(int persianYear, int persianMonth, int persianDay) {
-		this.persianYear = persianYear;
-		this.persianMonth = persianMonth - 1;
-		this.persianDay = persianDay;
-		setTimeInMillis(PersianCalendarUtils.persianToMillis(this.persianYear > 0 ? this.persianYear : this.persianYear + 1, this.persianMonth , this.persianDay));
-	}
 
+		int month = persianMonth - 1;
+		mCalendar.set(persianYear,month,persianDay);
+	}
+	public int get(int filed){
+		return mCalendar.get(filed);
+	}
 	public int getPersianYear() {
 		// calculatePersianDate();
-		return this.persianYear;
+		return mCalendar.get(Calendar.YEAR);
 	}
 
 	/**
@@ -222,7 +229,7 @@ public class PersianCalendar extends GregorianCalendar {
 	 */
 	public int getPersianMonth() {
 		// calculatePersianDate();
-		return this.persianMonth + 1;
+		return mCalendar.get(Calendar.MONTH) + 1;
 	}
 
 	/**
@@ -231,7 +238,7 @@ public class PersianCalendar extends GregorianCalendar {
 	 */
 	public String getPersianMonthName() {
 		// calculatePersianDate();
-		return PersianCalendarConstants.persianMonthNames[this.persianMonth];
+		return PersianCalendarConstants.persianMonthNames[mCalendar.get(Calendar.MONTH)];
 	}
 
 	/**
@@ -240,7 +247,7 @@ public class PersianCalendar extends GregorianCalendar {
 	 */
 	public int getPersianDay() {
 		// calculatePersianDate();
-		return this.persianDay;
+		return mCalendar.get(Calendar.DAY_OF_MONTH);
 	}
 
 	/**
@@ -248,18 +255,18 @@ public class PersianCalendar extends GregorianCalendar {
 	 * @return String Name of the day in week
 	 */
 	public String getPersianWeekDayName() {
-		switch (get(DAY_OF_WEEK)) {
-		case SATURDAY:
+		switch (mCalendar.get(Calendar.DAY_OF_WEEK)) {
+		case Calendar.SATURDAY:
 			return PersianCalendarConstants.persianWeekDays[0];
-		case SUNDAY:
+		case Calendar.SUNDAY:
 			return PersianCalendarConstants.persianWeekDays[1];
-		case MONDAY:
+		case Calendar.MONDAY:
 			return PersianCalendarConstants.persianWeekDays[2];
-		case TUESDAY:
+		case Calendar.TUESDAY:
 			return PersianCalendarConstants.persianWeekDays[3];
-		case WEDNESDAY:
+		case Calendar.WEDNESDAY:
 			return PersianCalendarConstants.persianWeekDays[4];
-		case THURSDAY:
+		case Calendar.THURSDAY:
 			return PersianCalendarConstants.persianWeekDays[5];
 		default:
 			return PersianCalendarConstants.persianWeekDays[6];
@@ -271,13 +278,13 @@ public class PersianCalendar extends GregorianCalendar {
 	 * 
 	 * @return String of Persian Date ex: شنبه 01 خرداد 1361
 	 */
-	public String getPersianLongDate() {
-		return getPersianWeekDayName() + "  " + this.persianDay + "  " + getPersianMonthName() + "  " + this.persianYear;
-	}
-
-	public String getPersianLongDateAndTime() {
-		return getPersianLongDate() + " ساعت " + get(HOUR_OF_DAY) + ":" + get(MINUTE) + ":" + get(SECOND);
-	}
+//	public String getPersianLongDate() {
+//		return getPersianWeekDayName() + "  " + this.persianDay + "  " + getPersianMonthName() + "  " + this.persianYear;
+//	}
+//
+//	public String getPersianLongDateAndTime() {
+//		return getPersianLongDate() + " ساعت " + get(HOUR_OF_DAY) + ":" + get(MINUTE) + ":" + get(SECOND);
+//	}
 
 	/**
 	 * 
@@ -286,12 +293,17 @@ public class PersianCalendar extends GregorianCalendar {
 	 */
 	public String getPersianShortDate() {
 		// calculatePersianDate();
-		return "" + formatToMilitary(this.persianYear) + delimiter + formatToMilitary(getPersianMonth()) + delimiter + formatToMilitary(this.persianDay);
+		return "" + formatToMilitary(mCalendar.get(Calendar.YEAR)) + delimiter +
+				formatToMilitary(getPersianMonth()) + delimiter +
+				formatToMilitary(mCalendar.get(Calendar.DAY_OF_MONTH));
 	}
 
 	public String getPersianShortDateTime() {
-		return "" + formatToMilitary(this.persianYear) + delimiter + formatToMilitary(getPersianMonth()) + delimiter + formatToMilitary(this.persianDay) + " " + formatToMilitary(this.get(HOUR_OF_DAY)) + ":" + formatToMilitary(get(MINUTE))
-				+ ":" + formatToMilitary(get(SECOND));
+		return "" + formatToMilitary(mCalendar.get(Calendar.YEAR)) + delimiter +
+				formatToMilitary(getPersianMonth()) + delimiter +
+				formatToMilitary(mCalendar.get(Calendar.YEAR)) + " " +
+				formatToMilitary(mCalendar.get(Calendar.HOUR_OF_DAY)) + ":" + formatToMilitary(mCalendar.get(Calendar.MINUTE))
+				+ ":" + formatToMilitary(mCalendar.get(Calendar.SECOND));
 	}
 
 	private String formatToMilitary(int i) {
@@ -333,7 +345,7 @@ public class PersianCalendar extends GregorianCalendar {
 //			return;
 //		}
 		add(field, amount);
-		calculatePersianDate();
+//		calculatePersianDate();
 	}
 
 	/**
@@ -408,26 +420,52 @@ public class PersianCalendar extends GregorianCalendar {
 
 	}
 
-	@Override
-	public int hashCode() {
-		return super.hashCode();
+
+	public void add(int field, int amount) {
+		mCalendar.add(field, amount);
 	}
 
-	@Override
-	public void set(int field, int value) {
-		super.set(field, value);
-		calculatePersianDate();
+
+	public boolean after(Object when) {
+		return mCalendar.after(when);
 	}
 
-	@Override
+
+	public boolean before(Object when) {
+		return mCalendar.before(when);
+	}
+
+
+	public int getFirstDayOfWeek() {
+		return mCalendar.getFirstDayOfWeek();
+	}
+
+
+	public long getTimeInMillis() {
+		return mCalendar.getTimeInMillis();
+	}
+
+	public TimeZone getTimeZone() {
+		return mCalendar.getTimeZone();
+	}
+
+
+
+	public void setFirstDayOfWeek(int value) {
+		mCalendar.setFirstDayOfWeek(value);
+	}
+
+
 	public void setTimeInMillis(long millis) {
-		super.setTimeInMillis(millis);
-		calculatePersianDate();
+		mCalendar.setTimeInMillis(millis);
 	}
 
-	@Override
-	public void setTimeZone(TimeZone zone) {
-		super.setTimeZone(zone);
-		calculatePersianDate();
+
+	public void setTimeZone(TimeZone value) {
+		mCalendar.setTimeZone(value);
 	}
+
+
+
+
 }
