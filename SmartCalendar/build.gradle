@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 36
 
     defaultConfig {
-        minSdk 17
-        targetSdk 33
+        minSdk 24
+        targetSdk 36
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.12"
         setProperty("archivesBaseName","smart-calendar-view")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -41,7 +41,7 @@ android {
     }
 }
 group = 'ir.smartdevelopers'
-version = '1.0.11'
+version = '1.0.12'
 
 //task sourcesJar(type: Jar) {
 //    archiveClassifier.set("sources")
@@ -53,10 +53,10 @@ version = '1.0.11'
 //}
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "androidx.fragment:fragment:1.6.1"
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation "androidx.fragment:fragment:1.8.9"
+    implementation "androidx.viewpager2:viewpager2:1.1.0"
 
 }
 
