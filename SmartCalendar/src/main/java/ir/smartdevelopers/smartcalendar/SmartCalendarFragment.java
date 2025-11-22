@@ -3,6 +3,7 @@ package ir.smartdevelopers.smartcalendar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -344,7 +345,7 @@ public class SmartCalendarFragment extends Fragment {
         int initialMount = mSmartCalendarView.getInitialMount();
         int initialDay = mSmartCalendarView.getInitialDay();
         persianCalendar.setPersianDate(initialYear, initialMount, initialDay);
-        persianCalendar.addPersianDate(PersianCalendar.MONTH, addMount);
+        persianCalendar.addPersianDate(Calendar.MONTH, addMount);
         if (oldFragment != null && oldFragment.adapter != null) {
             SmartCalendarCellModel cellModel = oldFragment.adapter.getSelectedDate();
             if (cellModel != null) {
@@ -357,7 +358,7 @@ public class SmartCalendarFragment extends Fragment {
             }
         }
 
-        persianCalendar.addPersianDate(PersianCalendar.WEEK_OF_MONTH, mAddWeek);
+        persianCalendar.addPersianDate(Calendar.WEEK_OF_MONTH, mAddWeek);
         int selectedMount = persianCalendar.getPersianMonth();
         int selectedDay = persianCalendar.getPersianDay();
         int selectedYear = persianCalendar.getPersianYear();
@@ -371,7 +372,7 @@ public class SmartCalendarFragment extends Fragment {
         /*last day of last mount*/
         PersianCalendar lastMount = new PersianCalendar();
         lastMount.setPersianDate(persianCalendar.getPersianYear(), persianCalendar.getPersianMonth(), 15);
-        lastMount.addPersianDate(PersianCalendar.MONTH, -1);
+        lastMount.addPersianDate(Calendar.MONTH, -1);
         int lastDayOfLAstMount = getMaximumDAyOfMount(lastMount.getPersianYear(), lastMount.getPersianMonth());
 
         int startDayOfCalendar = lastDayOfLAstMount - (dayOfWeekOfFirstDay - 1);
@@ -387,12 +388,12 @@ public class SmartCalendarFragment extends Fragment {
 
             SmartCalendarCellModel model = new SmartCalendarCellModel();
             model.setPersianDay(temp.getPersianDay());
-            model.setGregorianDay(temp.get(PersianCalendar.DAY_OF_MONTH));
+            model.setGregorianDay(temp.get(Calendar.DAY_OF_MONTH));
             model.setDayOfWeek(temp.get_Day_Of_Week());
             model.setCurrentMount(temp.getPersianMonth());
-            model.setCurrentGregorianMount(temp.get(PersianCalendar.DAY_OF_MONTH));
+            model.setCurrentGregorianMount(temp.get(Calendar.DAY_OF_MONTH));
             model.setCurrentYear(temp.getPersianYear());
-            model.setCurrentGregorianYear(temp.get(PersianCalendar.YEAR));
+            model.setCurrentGregorianYear(temp.get(Calendar.YEAR));
             model.setCurrentMountName(temp.getPersianMonthName());
             model.setDayOfWeekName(temp.getPersianWeekDayName());
             if (temp.getPersianMonth() != persianCalendar.getPersianMonth()) {
@@ -476,7 +477,7 @@ public class SmartCalendarFragment extends Fragment {
             }
             model.setEventModels(eventModelList);
             cellModels.add(model);
-            temp.addPersianDate(PersianCalendar.DAY_OF_MONTH, 1);
+            temp.addPersianDate(Calendar.DAY_OF_MONTH, 1);
         }
 
         mActiveMount = cellModels.get(cellModels.size() / 2).getCurrentMount();
